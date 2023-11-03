@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube for Productivity",
+  "description": "Enable zen mode on YouTube.",
+  "version": "0.0.1",
+  "permissions": ["activeTab", "scripting", "tabs"],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "index.js"
+  }
+}
