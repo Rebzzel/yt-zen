@@ -1,4 +1,5 @@
-#columns #secondary {
+#columns #secondary,
+#related {
   display: none !important;
 }
 
