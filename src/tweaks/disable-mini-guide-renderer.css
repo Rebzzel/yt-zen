@@ -1,9 +1,7 @@
-ytd-mini-guide-renderer,
-#columns #secondary {
+ytd-mini-guide-renderer {
   display: none !important;
 }
 
 ytd-app[mini-guide-visible] ytd-page-manager.ytd-app {
   margin-left: 0 !important;
 }
-
