@@ -1,3 +1,7 @@
 #columns #secondary {
   display: none !important;
 }
+
+#columns {
+  justify-content: center;
+}
