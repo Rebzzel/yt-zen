@@ -4,6 +4,14 @@
   "description": "Enable zen mode on YouTube.",
   "version": "0.0.5",
   "permissions": ["activeTab", "scripting", "tabs"],
+  "icons": {
+    "16": "assets/16x16.png",
+    "32": "assets/32x32.png",
+    "48": "assets/48x48.png",
+    "64": "assets/64x64.png",
+    "128": "assets/128x128.png",
+    "256": "assets/256x256.png"
+  },
   "host_permissions": [
     "https://www.youtube.com/*"
   ],
