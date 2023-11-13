@@ -1,22 +1,20 @@
-const SHARED_TWEAKS = [
+const ALL_TWEAKS = [
   "tweaks/disable-mini-guide-renderer.css",
+  "tweaks/disable-shorts-browser.css",
+  "tweaks/disable-videos-browser.css",
   "tweaks/disable-videos-column.css",
 ]
-const HOME_PAGE_TWEAKS = [
-  "tweaks/disable-video-browser.css",
-  "tweaks/disable-shorts-browser.css",
-]
+const [
+  DISABLE_MINI_GUIDE_TWEAK,
+  DISABLE_SHORTS_BROWSER_TWEAK,
+  DISABLE_VIDEOS_BROWSER_TWEAK,
+  DISABLE_VIDEOS_COLUMN_TWEAK,
+] = ALL_TWEAKS
 
-function verifyTab(tab) {
-  return tab.url.startsWith("https://www.youtube.com")
-}
+const tabsToPrevURLs = {}
 
-function isHomePageURL(url) {
-  return url === "https://www.youtube.com/"
-}
-
-async function handleTabUpdate(tab) {
-  if (!verifyTab(tab)) return
+chrome.tabs.onUpdated.addListener(async (_0, _1, tab) => {
+  if (!verifyTabUpdate(tab)) return
 
   const target = { tabId: tab.id }
   const insertCSS = (options) =>
@@ -24,15 +22,38 @@ async function handleTabUpdate(tab) {
   const removeCSS = (options) =>
     chrome.scripting.removeCSS({ ...options, target })
 
-  await insertCSS({ files: SHARED_TWEAKS })
+  // Tab may contain previous injected tweaks
+  await removeCSS({ files: ALL_TWEAKS })
 
-  if (isHomePageURL(tab.url)) {
-    await insertCSS({ files: HOME_PAGE_TWEAKS })
-  } else {
-    await removeCSS({ files: HOME_PAGE_TWEAKS })
+  const isHomePage = tab.url === "https://www.youtube.com/"
+
+  await insertCSS({
+    files: [
+      DISABLE_MINI_GUIDE_TWEAK,
+      DISABLE_VIDEOS_COLUMN_TWEAK,
+      ...(isHomePage ? [
+        DISABLE_SHORTS_BROWSER_TWEAK,
+        DISABLE_VIDEOS_BROWSER_TWEAK,
+      ] : [])
+    ],
+  })
+})
+
+function verifyTab(tab) {
+  try {
+    return tab.url.startsWith("https://www.youtube.com")
+  } catch {
+    return false
   }
 }
 
-chrome.tabs.onUpdated.addListener(
-  (_0, _1, tab) => handleTabUpdate(tab),
-)
+function verifyTabUpdate(tab) {
+  if (!verifyTab(tab)) {
+    delete tabsToPrevURLs[tab.id]
+    return false
+  }
+
+  const prevURL = tabsToPrevURLs[tab.id]
+  tabsToPrevURLs[tab.id] = tab.url
+  return prevURL !== tab.url
+}
